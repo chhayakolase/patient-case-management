@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Patients Directory - Smart Patient Case Management System{% endblock %}
+{% block page_title %}Patient Directory & Records{% endblock %}
+
+{% block content %}
+<div class="toolbar">
+  <div>
+    <h2 style="font-size: 20px; font-weight: 700; color: #0f4c81;">Registered Patients</h2>
+    <p style="color: #64748b; font-size: 13px;">Manage demographics, contact details, and access complete clinical case histories.</p>
+  </div>
+  <div>
+    <a href="{{ url_for('add_patient_view') }}" class="btn btn-primary">
+      <i class="fa-solid fa-user-plus"></i> Register New Patient
+    </a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header" style="flex-wrap: wrap; gap: 15px;">
+    <!-- Server Search Form -->
+    <form method="GET" action="{{ url_for('patients') }}" style="display: flex; gap: 8px; flex: 1; min-width: 280px; max-width: 450px;">
+      <div class="search-box" style="flex: 1;">
+        <i class="fa-solid fa-magnifying-glass" style="color: #94a3b8;"></i>
+        <input
+          type="text"
+          name="q"
+          value="{{ search_query }}"
+          placeholder="Search by Patient ID, Name, or Phone..."
+        >
+      </div>
+      <button type="submit" class="btn btn-secondary btn-sm">Search</button>
+      {% if search_query %}
+      <a href="{{ url_for('patients') }}" class="btn btn-secondary btn-sm" title="Clear search">Clear</a>
+      {% endif %}
+    </form>
+
+    <!-- Client Quick Filter -->
+    <div style="font-size: 13px; color: #64748b;">
+      Total: <strong>{{ patients|length }}</strong> patient(s) found
+    </div>
+  </div>
+
+  <div class="card-body" style="padding: 0;">
+    {% if patients %}
+    <div class="table-responsive">
+      <table class="table filterable-table">
+        <thead>
+          <tr>
+            <th>Patient ID</th>
+            <th>Patient Name</th>
+            <th>Age / Gender</th>
+            <th>Phone</th>
+            <th>Blood Group</th>
+            <th>Registered Date</th>
+            <th style="text-align: right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in patients %}
+          <tr>
+            <td>
+              <span style="font-family: monospace; font-weight: 700; color: #0f4c81;">
+                {{ p['patient_id'] }}
+              </span>
+            </td>
+            <td>
+              <a href="{{ url_for('patient_details', patient_id=p['patient_id']) }}" style="font-weight: 600; color: #1e88e5; text-decoration: none;">
+                {{ p['name'] }}
+              </a>
+              {% if p['address'] %}
+              <div style="font-size: 11.5px; color: #64748b; max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <i class="fa-solid fa-location-dot" style="font-size: 10px;"></i> {{ p['address'] }}
+              </div>
+              {% endif %}
+            </td>
+            <td>
+              {{ p['age'] }} yrs &bull; 
+              <span class="badge badge-gender-{{ p['gender'][0]|lower }}">{{ p['gender'] }}</span>
+            </td>
+            <td>
+              <a href="tel:{{ p['phone'] }}" style="color: inherit; text-decoration: none;">
+                <i class="fa-solid fa-phone" style="font-size: 11px; color: #94a3b8;"></i> {{ p['phone'] }}
+              </a>
+            </td>
+            <td>
+              {% if p['blood_group'] %}
+              <span class="badge badge-blood">{{ p['blood_group'] }}</span>
+              {% else %}
+              <span style="color: #94a3b8;">&mdash;</span>
+              {% endif %}
+            </td>
+            <td style="color: #64748b; font-size: 12.5px;">
+              {{ p['registered_at'] }}
+            </td>
+            <td style="text-align: right; white-space: nowrap;">
+              <a href="{{ url_for('patient_details', patient_id=p['patient_id']) }}" class="btn btn-secondary btn-sm" title="View Patient Profile and Case History">
+                <i class="fa-regular fa-folder-open"></i> View
+              </a>
+              <a href="{{ url_for('add_case_view', patient_id=p['patient_id']) }}" class="btn btn-primary btn-sm" title="Record New Case for Patient">
+                <i class="fa-solid fa-notes-medical"></i> +Case
+              </a>
+              <a href="{{ url_for('edit_patient_view', patient_id=p['patient_id']) }}" class="btn btn-secondary btn-sm" title="Edit Patient Details">
+                <i class="fa-regular fa-pen-to-square"></i>
+              </a>
+              <form method="POST" action="{{ url_for('delete_patient_action', patient_id=p['patient_id']) }}" style="display: inline;" onsubmit="return confirmPatientDelete('{{ p['patient_id'] }}', '{{ p['name'] }}')">
+                <button type="submit" class="btn btn-danger btn-sm" title="Delete Patient Record">
+                  <i class="fa-regular fa-trash-can"></i>
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 45px 20px; color: #94a3b8;">
+      <i class="fa-solid fa-user-xmark" style="font-size: 36px; margin-bottom: 12px; display: block;"></i>
+      <h3 style="color: #475569; font-size: 16px; margin-bottom: 6px;">No Patients Found</h3>
+      <p style="font-size: 13px;">No patient records matched your search query. Try another keyword or register a new patient.</p>
+      <div style="margin-top: 15px;">
+        <a href="{{ url_for('add_patient_view') }}" class="btn btn-primary">Register New Patient</a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Case #{{ case['id'] }} - Smart Patient Case Management System{% endblock %}
+{% block page_title %}Update Medical Case Notes{% endblock %}
+
+{% block content %}
+<div class="toolbar">
+  <div>
+    <h2 style="font-size: 20px; font-weight: 700; color: #0f4c81;">Update Medical Case #{{ case['id'] }}</h2>
+    <p style="color: #64748b; font-size: 13px;">Editing clinical notes for <strong>{{ case['patient_name'] }}</strong> ({{ case['patient_id'] }}).</p>
+  </div>
+  <div>
+    <a href="{{ url_for('case_details', case_id=case['id']) }}" class="btn btn-secondary">
+      <i class="fa-solid fa-arrow-left"></i> Cancel & Return
+    </a>
+  </div>
+</div>
+
+<div class="card" style="max-width: 900px; margin: 0 auto;">
+  <div class="card-header">
+    <div class="card-title">
+      <i class="fa-regular fa-pen-to-square" style="color: #1e88e5;"></i>
+      <span>Edit Clinical Record</span>
+    </div>
+  </div>
+
+  <form method="POST" action="{{ url_for('edit_case_view', case_id=case['id']) }}">
+    <div class="card-body">
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label>Patient</label>
+          <input
+            type="text"
+            class="form-control"
+            value="{{ case['patient_name'] }} ({{ case['patient_id'] }})"
+            readonly
+            style="background-color: #f1f5f9; color: #0f4c81; font-weight: 600;"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="case_date">Case Consultation Date <span class="required" style="color: #ef4444;">*</span></label>
+          <input
+            type="date"
+            id="case_date"
+            name="case_date"
+            class="form-control"
+            value="{{ case['case_date'] }}"
+            required
+          >
+        </div>
+
+        <div class="form-group form-group-full">
+          <label for="doctor_name">Attending Doctor <span class="required" style="color: #ef4444;">*</span></label>
+          <select id="doctor_name" name="doctor_name" class="form-control" required>
+            {% for doc in doctors %}
+            <option value="{{ doc }}" {% if case['doctor_name'] == doc %}selected{% endif %}>{{ doc }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group form-group-full">
+          <label for="chief_complaint">Chief Complaint <span class="required" style="color: #ef4444;">*</span></label>
+          <input
+            type="text"
+            id="chief_complaint"
+            name="chief_complaint"
+            class="form-control"
+            value="{{ case['chief_complaint'] }}"
+            required
+          >
+        </div>
+
+        <div class="form-group form-group-full">
+          <label for="symptoms">Symptoms & Clinical Examination Findings <span class="required" style="color: #ef4444;">*</span></label>
+          <textarea
+            id="symptoms"
+            name="symptoms"
+            class="form-control"
+            rows="3"
+            required
+          >{{ case['symptoms'] }}</textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="medical_history">Past Medical History</label>
+          <textarea
+            id="medical_history"
+            name="medical_history"
+            class="form-control"
+            rows="2"
+          >{{ case['medical_history'] or '' }}</textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="allergies">Known Drug / Environmental Allergies</label>
+          <textarea
+            id="allergies"
+            name="allergies"
+            class="form-control"
+            rows="2"
+          >{{ case['allergies'] or '' }}</textarea>
+        </div>
+
+        <div class="form-group form-group-full">
+          <label for="diagnosis">Primary Clinical Diagnosis <span class="required" style="color: #ef4444;">*</span></label>
+          <input
+            type="text"
+            id="diagnosis"
+            name="diagnosis"
+            class="form-control"
+            value="{{ case['diagnosis'] }}"
+            required
+          >
+        </div>
+
+        <div class="form-group form-group-full">
+          <label for="treatment">Prescribed Treatment & Medications <span class="required" style="color: #ef4444;">*</span></label>
+          <textarea
+            id="treatment"
+            name="treatment"
+            class="form-control"
+            rows="4"
+            required
+          >{{ case['treatment'] }}</textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="doctor_notes">Physician Confidential Notes & Advice</label>
+          <textarea
+            id="doctor_notes"
+            name="doctor_notes"
+            class="form-control"
+            rows="2"
+          >{{ case['doctor_notes'] or '' }}</textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="follow_up_date">Recommended Follow-up Visit Date</label>
+          <input
+            type="date"
+            id="follow_up_date"
+            name="follow_up_date"
+            class="form-control"
+            value="{{ case['follow_up_date'] or '' }}"
+          >
+        </div>
+
+      </div>
+    </div>
+
+    <div class="card-footer">
+      <a href="{{ url_for('case_details', case_id=case['id']) }}" class="btn btn-secondary">Cancel</a>
+      <button type="submit" class="btn btn-primary">
+        <i class="fa-solid fa-floppy-disk"></i> Update Case Record
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

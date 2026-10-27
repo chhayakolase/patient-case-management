@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block title %}Appointments Management - Smart Patient Case Management System{% endblock %}
+{% block page_title %}Patient Appointment Scheduling{% endblock %}
+
+{% block content %}
+<div class="toolbar">
+  <div>
+    <h2 style="font-size: 20px; font-weight: 700; color: #0f4c81;">Appointments & Doctor Visits</h2>
+    <p style="color: #64748b; font-size: 13px;">Schedule consultations, detect scheduling conflicts, and manage patient queues.</p>
+  </div>
+  <div>
+    <a href="#schedule-form" class="btn btn-primary">
+      <i class="fa-solid fa-calendar-plus"></i> Schedule New Visit
+    </a>
+  </div>
+</div>
+
+<!-- Main Split: Scheduling Form on Left/Top and Appointments Table on Right/Bottom -->
+<div style="display: grid; grid-template-columns: 360px 1fr; gap: 24px; align-items: start;">
+
+  <!-- Schedule Appointment Form Card -->
+  <div class="card" id="schedule-form">
+    <div class="card-header">
+      <div class="card-title">
+        <i class="fa-solid fa-clock" style="color: #1e88e5;"></i>
+        <span>Book Appointment</span>
+      </div>
+    </div>
+
+    <form method="POST" action="{{ url_for('schedule_appointment_action') }}">
+      <div class="card-body" style="display: flex; flex-direction: column; gap: 14px;">
+
+        <!-- Select Patient -->
+        <div class="form-group">
+          <label for="patient_id">Patient <span class="required" style="color: #ef4444;">*</span></label>
+          <select id="patient_id" name="patient_id" class="form-control" required>
+            <option value="" disabled selected>Select Patient...</option>
+            {% for p in patients %}
+            <option value="{{ p['patient_id'] }}">
+              {{ p['patient_id'] }} &mdash; {{ p['name'] }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Date -->
+        <div class="form-group">
+          <label for="appointment_date">Appointment Date <span class="required" style="color: #ef4444;">*</span></label>
+          <input
+            type="date"
+            id="appointment_date"
+            name="appointment_date"
+            class="form-control"
+            value="{{ today_str }}"
+            min="{{ today_str }}"
+            required
+          >
+        </div>
+
+        <!-- Time Slot -->
+        <div class="form-group">
+          <label for="appointment_time">Consultation Time Slot <span class="required" style="color: #ef4444;">*</span></label>
+          <select id="appointment_time" name="appointment_time" class="form-control" required>
+            <option value="" disabled selected>Choose Time Slot...</option>
+            <option value="09:00 AM">09:00 AM - 09:30 AM</option>
+            <option value="09:30 AM">09:30 AM - 10:00 AM</option>
+            <option value="10:00 AM">10:00 AM - 10:30 AM</option>
+            <option value="10:30 AM">10:30 AM - 11:00 AM</option>
+            <option value="11:00 AM">11:00 AM - 11:30 AM</option>
+            <option value="11:30 AM">11:30 AM - 12:00 PM</option>
+            <option value="12:00 PM">12:00 PM - 12:30 PM</option>
+            <option value="02:00 PM">02:00 PM - 02:30 PM</option>
+            <option value="02:30 PM">02:30 PM - 03:00 PM</option>
+            <option value="03:00 PM">03:00 PM - 03:30 PM</option>
+            <option value="03:30 PM">03:30 PM - 04:00 PM</option>
+            <option value="04:00 PM">04:00 PM - 04:30 PM</option>
+            <option value="04:30 PM">04:30 PM - 05:00 PM</option>
+          </select>
+        </div>
+
+        <!-- Doctor -->
+        <div class="form-group">
+          <label for="doctor_name">Consulting Doctor <span class="required" style="color: #ef4444;">*</span></label>
+          <select id="doctor_name" name="doctor_name" class="form-control" required>
+            <option value="" disabled selected>Select Doctor...</option>
+            {% for doc in doctors %}
+            <option value="{{ doc }}">{{ doc }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Reason -->
+        <div class="form-group">
+          <label for="reason">Reason for Visit / Problem <span class="required" style="color: #ef4444;">*</span></label>
+          <input
+            type="text"
+            id="reason"
+            name="reason"
+            class="form-control"
+            placeholder="e.g. Regular BP checkup, Chest pain"
+            required
+          >
+        </div>
+
+        <div style="background: #f0f7ff; border: 1px solid #bae6fd; border-radius: 6px; padding: 10px; font-size: 11.5px; color: #0284c7;">
+          <i class="fa-solid fa-shield-halved"></i> <strong>Automated Conflict Guard:</strong> The system automatically verifies that the chosen doctor does not have an overlapping scheduled visit at the selected time.
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 5px;">
+          <i class="fa-solid fa-calendar-check"></i> Confirm Appointment
+        </button>
+
+      </div>
+    </form>
+  </div>
+
+  <!-- Appointments Master List Card -->
+  <div class="card">
+    <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
+      <div class="card-title">
+        <i class="fa-solid fa-list-check" style="color: #1e88e5;"></i>
+        <span>Scheduled Patient Visits ({{ appointments|length }})</span>
+      </div>
+
+      <!-- Filters -->
+      <form method="GET" action="{{ url_for('appointments') }}" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+        <select name="status" class="form-control" style="width: 130px; padding: 5px 8px; font-size: 12.5px;">
+          <option value="All" {% if status_filter == 'All' %}selected{% endif %}>All Statuses</option>
+          <option value="Scheduled" {% if status_filter == 'Scheduled' %}selected{% endif %}>Scheduled</option>
+          <option value="Completed" {% if status_filter == 'Completed' %}selected{% endif %}>Completed</option>
+          <option value="Cancelled" {% if status_filter == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+        </select>
+
+        <input
+          type="date"
+          name="date"
+          value="{{ date_filter }}"
+          class="form-control"
+          style="width: 140px; padding: 5px 8px; font-size: 12.5px;"
+          title="Filter by appointment date"
+        >
+
+        <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+        {% if status_filter != 'All' or date_filter %}
+        <a href="{{ url_for('appointments') }}" class="btn btn-secondary btn-sm" title="Clear Filters">Clear</a>
+        {% endif %}
+      </form>
+    </div>
+
+    <div class="card-body" style="padding: 0;">
+      {% if appointments %}
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Date & Time</th>
+              <th>Patient</th>
+              <th>Doctor</th>
+              <th>Reason for Visit</th>
+              <th>Status</th>
+              <th style="text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in appointments %}
+            <tr>
+              <td style="white-space: nowrap;">
+                <div style="font-weight: 700; color: #0f4c81;">{{ a['appointment_date'] }}</div>
+                <div style="font-size: 11.5px; color: #64748b;">
+                  <i class="fa-regular fa-clock" style="font-size: 10px;"></i> {{ a['appointment_time'] }}
+                </div>
+              </td>
+              <td>
+                <a href="{{ url_for('patient_details', patient_id=a['patient_id']) }}" style="font-weight: 600; color: #1e88e5; text-decoration: none;">
+                  {{ a['patient_name'] }}
+                </a>
+                <div style="font-size: 11px; color: #64748b; font-family: monospace;">{{ a['patient_id'] }}</div>
+              </td>
+              <td style="font-size: 12.5px;">{{ a['doctor_name'] }}</td>
+              <td style="font-size: 13px; color: #475569;">{{ a['reason'] }}</td>
+              <td>
+                <span class="badge badge-{{ a['status']|lower }}">{{ a['status'] }}</span>
+              </td>
+              <td style="text-align: right; white-space: nowrap;">
+                {% if a['status'] == 'Scheduled' %}
+                <form method="POST" action="{{ url_for('update_appointment_status_action', appt_id=a['id']) }}" style="display: inline;">
+                  <input type="hidden" name="status" value="Completed">
+                  <button type="submit" class="btn btn-success btn-sm" title="Mark Consultation Completed">
+                    <i class="fa-solid fa-check"></i> Complete
+                  </button>
+                </form>
+
+                <form method="POST" action="{{ url_for('update_appointment_status_action', appt_id=a['id']) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to cancel this appointment?')">
+                  <input type="hidden" name="status" value="Cancelled">
+                  <button type="submit" class="btn btn-danger btn-sm" title="Cancel Appointment">
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                </form>
+                {% else %}
+                <span style="color: #94a3b8; font-size: 11.5px;">{{ a['status'] }}</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div style="text-align: center; padding: 45px 20px; color: #94a3b8;">
+        <i class="fa-regular fa-calendar-xmark" style="font-size: 36px; margin-bottom: 12px; display: block;"></i>
+        <h3 style="color: #475569; font-size: 16px; margin-bottom: 6px;">No Appointments Found</h3>
+        <p style="font-size: 13px;">No patient visits found for the selected filter criteria.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

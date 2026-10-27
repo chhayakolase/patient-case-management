@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}Reports & Data Analytics - Smart Patient Case Management System{% endblock %}
+{% block page_title %}Patient Case Analytics & Reports{% endblock %}
+
+{% block content %}
+<div class="toolbar">
+  <div>
+    <h2 style="font-size: 20px; font-weight: 700; color: #0f4c81;">Statistical Analysis & Reports</h2>
+    <p style="color: #64748b; font-size: 13px;">Advanced data analytics powered by Python <strong>Pandas</strong> and visual charts rendered with <strong>Matplotlib</strong>.</p>
+  </div>
+  <div style="display: flex; gap: 10px;">
+    <!-- Export CSV Buttons -->
+    <a href="{{ url_for('export_csv', report_type='patients') }}" class="btn btn-secondary">
+      <i class="fa-solid fa-file-csv" style="color: #10b981;"></i> Export Patients CSV
+    </a>
+    <a href="{{ url_for('export_csv', report_type='medical_cases') }}" class="btn btn-secondary">
+      <i class="fa-solid fa-file-csv" style="color: #0284c7;"></i> Export Cases CSV
+    </a>
+    <a href="{{ url_for('export_csv', report_type='appointments') }}" class="btn btn-secondary">
+      <i class="fa-solid fa-file-csv" style="color: #f59e0b;"></i> Export Appointments CSV
+    </a>
+  </div>
+</div>
+
+<!-- 4 Key Data Science Metrics Cards -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon blue">
+      <i class="fa-solid fa-users"></i>
+    </div>
+    <div class="stat-info">
+      <h3>{{ summary.total_patients }}</h3>
+      <p>Total Patient Records Analyzed</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon teal">
+      <i class="fa-solid fa-file-medical"></i>
+    </div>
+    <div class="stat-info">
+      <h3>{{ summary.total_cases }}</h3>
+      <p>Documented Clinical Cases</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon green">
+      <i class="fa-solid fa-calendar-check"></i>
+    </div>
+    <div class="stat-info">
+      <h3>{{ summary.total_appointments }}</h3>
+      <p>Total Consultation Bookings</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon amber">
+      <i class="fa-solid fa-chart-pie"></i>
+    </div>
+    <div class="stat-info">
+      <h3>4</h3>
+      <p>Matplotlib Charts Rendered</p>
+    </div>
+  </div>
+</div>
+
+<!-- 2x2 GRID OF MATPLOTLIB CHARTS -->
+<div class="charts-grid">
+
+  <!-- Chart 1: Monthly Registrations Trend -->
+  <div class="chart-card">
+    <div style="font-weight: 700; color: #0f4c81; margin-bottom: 12px; font-size: 14px; text-align: left;">
+      <i class="fa-solid fa-chart-column" style="color: #1e88e5;"></i> Monthly Patient Registration Trend
+    </div>
+    {% if monthly_chart %}
+    <img src="data:image/png;base64,{{ monthly_chart }}" alt="Monthly Patient Registrations Chart">
+    {% else %}
+    <div style="padding: 40px; color: #94a3b8;">No monthly chart data available</div>
+    {% endif %}
+    <div style="font-size: 11.5px; color: #64748b; margin-top: 8px;">
+      Evaluates patient intake patterns across active operating months.
+    </div>
+  </div>
+
+  <!-- Chart 2: Age Group Distribution -->
+  <div class="chart-card">
+    <div style="font-weight: 700; color: #0f4c81; margin-bottom: 12px; font-size: 14px; text-align: left;">
+      <i class="fa-solid fa-chart-bar" style="color: #00acc1;"></i> Patient Distribution by Age Group
+    </div>
+    {% if age_chart %}
+    <img src="data:image/png;base64,{{ age_chart }}" alt="Patient Age Distribution Chart">
+    {% else %}
+    <div style="padding: 40px; color: #94a3b8;">No age group chart data available</div>
+    {% endif %}
+    <div style="font-size: 11.5px; color: #64748b; margin-top: 8px;">
+      Segmented into Children (0-12), Teens (13-19), Adults (20-59), and Seniors (60+).
+    </div>
+  </div>
+
+  <!-- Chart 3: Diagnosis Frequency -->
+  <div class="chart-card">
+    <div style="font-weight: 700; color: #0f4c81; margin-bottom: 12px; font-size: 14px; text-align: left;">
+      <i class="fa-solid fa-viruses" style="color: #fb8c00;"></i> Cases Frequency by Clinical Diagnosis
+    </div>
+    {% if diag_chart %}
+    <img src="data:image/png;base64,{{ diag_chart }}" alt="Cases by Diagnosis Chart">
+    {% else %}
+    <div style="padding: 40px; color: #94a3b8;">No diagnosis chart data available</div>
+    {% endif %}
+    <div style="font-size: 11.5px; color: #64748b; margin-top: 8px;">
+      Identifies predominant medical diagnoses and common health ailments.
+    </div>
+  </div>
+
+  <!-- Chart 4: Gender Distribution -->
+  <div class="chart-card">
+    <div style="font-weight: 700; color: #0f4c81; margin-bottom: 12px; font-size: 14px; text-align: left;">
+      <i class="fa-solid fa-chart-pie" style="color: #e53935;"></i> Patient Demographics by Gender Ratio
+    </div>
+    {% if gender_chart %}
+    <img src="data:image/png;base64,{{ gender_chart }}" alt="Gender Breakdown Chart">
+    {% else %}
+    <div style="padding: 40px; color: #94a3b8;">No gender chart data available</div>
+    {% endif %}
+    <div style="font-size: 11.5px; color: #64748b; margin-top: 8px;">
+      Proportional demographic distribution across male and female patients.
+    </div>
+  </div>
+
+</div>
+
+<!-- PANDAS STATISTICAL BREAKDOWN SUMMARY TABLES -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 25px;">
+
+  <!-- Age Group Analysis Table -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <i class="fa-solid fa-table-list" style="color: #1e88e5;"></i>
+        <span>Age Group Frequency Analysis</span>
+      </div>
+      <span style="font-size: 11px; background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; font-weight: 600;">Pandas .cut()</span>
+    </div>
+    <div class="card-body" style="padding: 0;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Age Cohort</th>
+            <th>Patient Count</th>
+            <th>Percentage (%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for grp, cnt in summary.age_groups.items() %}
+          <tr>
+            <td><strong>{{ grp }}</strong></td>
+            <td>{{ cnt }}</td>
+            <td>
+              {% if summary.total_patients > 0 %}
+                {{ "%.1f"|format((cnt / summary.total_patients) * 100) }}%
+              {% else %}
+                0%
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Appointment Status Breakdown Table -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <i class="fa-solid fa-list-check" style="color: #10b981;"></i>
+        <span>Consultation Queue Status</span>
+      </div>
+      <span style="font-size: 11px; background: #d1fae5; color: #047857; padding: 2px 8px; border-radius: 4px; font-weight: 600;">Pandas .value_counts()</span>
+    </div>
+    <div class="card-body" style="padding: 0;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Status Category</th>
+            <th>Count</th>
+            <th>Proportion</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for st, cnt in summary.appointment_status.items() %}
+          <tr>
+            <td><span class="badge badge-{{ st|lower }}">{{ st }}</span></td>
+            <td><strong>{{ cnt }}</strong></td>
+            <td>
+              {% if summary.total_appointments > 0 %}
+                {{ "%.1f"|format((cnt / summary.total_appointments) * 100) }}%
+              {% else %}
+                0%
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- CSV Export Callout Panel -->
+<div class="card" style="background: linear-gradient(90deg, #f0fdf4 0%, #ffffff 100%); border-left: 4px solid #10b981;">
+  <div class="card-body" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+    <div>
+      <h3 style="color: #065f46; font-size: 16px; font-weight: 700; margin-bottom: 4px;">
+        <i class="fa-solid fa-cloud-arrow-down"></i> Automated Data Export (Pandas DataFrame to CSV)
+      </h3>
+      <p style="color: #475569; font-size: 12.5px;">
+        Authorized staff can export complete database tables in standard comma-separated values (CSV) format for spreadsheet auditing or external statistical evaluation.
+      </p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <a href="{{ url_for('export_csv', report_type='patients') }}" class="btn btn-success btn-sm">
+        <i class="fa-solid fa-download"></i> Download Patients
+      </a>
+      <a href="{{ url_for('export_csv', report_type='medical_cases') }}" class="btn btn-success btn-sm">
+        <i class="fa-solid fa-download"></i> Download Cases
+      </a>
+      <a href="{{ url_for('export_csv', report_type='appointments') }}" class="btn btn-success btn-sm">
+        <i class="fa-solid fa-download"></i> Download Appointments
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

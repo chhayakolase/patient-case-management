@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block title %}{{ patient['name'] }} ({{ patient['patient_id'] }}) - Patient Profile{% endblock %}
+{% block page_title %}Patient Comprehensive Medical File{% endblock %}
+
+{% block content %}
+<div class="toolbar no-print">
+  <div>
+    <a href="{{ url_for('patients') }}" class="btn btn-secondary btn-sm">
+      <i class="fa-solid fa-arrow-left"></i> Back to Patient Directory
+    </a>
+  </div>
+  <div style="display: flex; gap: 8px;">
+    <a href="{{ url_for('add_case_view', patient_id=patient['patient_id']) }}" class="btn btn-primary">
+      <i class="fa-solid fa-file-medical"></i> Record New Medical Case
+    </a>
+    <a href="{{ url_for('edit_patient_view', patient_id=patient['patient_id']) }}" class="btn btn-secondary">
+      <i class="fa-regular fa-pen-to-square"></i> Edit Demographics
+    </a>
+    <form method="POST" action="{{ url_for('delete_patient_action', patient_id=patient['patient_id']) }}" style="display: inline;" onsubmit="return confirmPatientDelete('{{ patient['patient_id'] }}', '{{ patient['name'] }}')">
+      <button type="submit" class="btn btn-danger" title="Delete Patient Record">
+        <i class="fa-regular fa-trash-can"></i> Delete
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- PATIENT PROFILE SUMMARY CARD -->
+<div class="profile-card">
+  <div class="profile-main">
+    <div class="patient-avatar-large">
+      {{ patient['name'][0]|upper }}
+    </div>
+    <div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <h2 style="font-size: 22px; font-weight: 700; color: #0f4c81;">{{ patient['name'] }}</h2>
+        <span style="font-family: monospace; background: #e3f2fd; color: #0f4c81; padding: 2px 8px; border-radius: 4px; font-size: 13px; font-weight: 700;">
+          {{ patient['patient_id'] }}
+        </span>
+      </div>
+
+      <div class="patient-meta-row">
+        <span><i class="fa-regular fa-user"></i> {{ patient['age'] }} Years</span>
+        <span>&bull;</span>
+        <span><i class="fa-solid fa-venus-mars"></i> {{ patient['gender'] }}</span>
+        <span>&bull;</span>
+        <span>Blood Group: <strong style="color: #e65100;">{{ patient['blood_group'] or 'Not Recorded' }}</strong></span>
+        <span>&bull;</span>
+        <span>Registered: {{ patient['registered_at'] }}</span>
+      </div>
+
+      <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 18px; font-size: 12.5px; color: #475569;">
+        <div>
+          <i class="fa-solid fa-phone" style="color: #1e88e5;"></i>
+          <strong>Phone:</strong> <a href="tel:{{ patient['phone'] }}" style="color: inherit; text-decoration: none;">{{ patient['phone'] }}</a>
+        </div>
+        {% if patient['email'] %}
+        <div>
+          <i class="fa-regular fa-envelope" style="color: #1e88e5;"></i>
+          <strong>Email:</strong> {{ patient['email'] }}
+        </div>
+        {% endif %}
+        {% if patient['emergency_contact'] %}
+        <div>
+          <i class="fa-solid fa-heart-pulse" style="color: #ef4444;"></i>
+          <strong>Emergency:</strong> {{ patient['emergency_contact'] }}
+        </div>
+        {% endif %}
+        {% if patient['address'] %}
+        <div style="width: 100%;">
+          <i class="fa-solid fa-location-dot" style="color: #1e88e5;"></i>
+          <strong>Address:</strong> {{ patient['address'] }}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PATIENT MEDICAL CASE HISTORY TIMELINE -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      <i class="fa-solid fa-notes-medical" style="color: #1e88e5;"></i>
+      <span>Clinical Case History & Diagnoses ({{ cases|length }} Case Records)</span>
+    </div>
+    <a href="{{ url_for('add_case_view', patient_id=patient['patient_id']) }}" class="btn btn-primary btn-sm">
+      <i class="fa-solid fa-plus"></i> Add Follow-up / New Case
+    </a>
+  </div>
+
+  <div class="card-body">
+    {% if cases %}
+    <div class="timeline">
+      {% for c in cases %}
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <div>
+              <h4>Case #{{ c['id'] }}: {{ c['diagnosis'] }}</h4>
+              <div class="timeline-date">
+                <i class="fa-regular fa-calendar"></i> Case Date: <strong>{{ c['case_date'] }}</strong> &bull;
+                <i class="fa-solid fa-user-doctor"></i> Doctor: <strong>{{ c['doctor_name'] }}</strong>
+              </div>
+            </div>
+            <div>
+              <a href="{{ url_for('case_details', case_id=c['id']) }}" class="btn btn-secondary btn-sm" title="Print/View Full Clinical Case Sheet">
+                <i class="fa-solid fa-print"></i> View Sheet
+              </a>
+              <a href="{{ url_for('edit_case_view', case_id=c['id']) }}" class="btn btn-secondary btn-sm" title="Edit Case Notes">
+                <i class="fa-regular fa-pen-to-square"></i>
+              </a>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 13px; margin-top: 10px;">
+            <div>
+              <strong style="color: #334155;"><i class="fa-solid fa-comment-medical" style="color: #0284c7;"></i> Chief Complaint:</strong>
+              <p style="color: #475569; margin-top: 2px;">{{ c['chief_complaint'] }}</p>
+            </div>
+            <div>
+              <strong style="color: #334155;"><i class="fa-solid fa-stethoscope" style="color: #0284c7;"></i> Symptoms Observed:</strong>
+              <p style="color: #475569; margin-top: 2px;">{{ c['symptoms'] }}</p>
+            </div>
+          </div>
+
+          <div style="background: #f8fafc; border-left: 3px solid #10b981; padding: 10px 14px; margin-top: 12px; border-radius: 4px;">
+            <strong style="color: #065f46;"><i class="fa-solid fa-pills"></i> Prescribed Treatment & Medications:</strong>
+            <p style="color: #1e293b; margin-top: 3px; font-family: inherit;">{{ c['treatment'] }}</p>
+          </div>
+
+          {% if c['doctor_notes'] %}
+          <div style="margin-top: 10px; font-size: 12.5px; color: #64748b;">
+            <strong>Physician Notes:</strong> {{ c['doctor_notes'] }}
+          </div>
+          {% endif %}
+
+          <div style="margin-top: 10px; display: flex; gap: 20px; font-size: 12px; color: #64748b; border-top: 1px dashed #e2e8f0; padding-top: 8px;">
+            {% if c['allergies'] %}
+            <span><i class="fa-solid fa-triangle-exclamation" style="color: #ef4444;"></i> <strong>Allergies:</strong> {{ c['allergies'] }}</span>
+            {% endif %}
+            {% if c['follow_up_date'] %}
+            <span><i class="fa-regular fa-calendar-check" style="color: #0284c7;"></i> <strong>Follow-up Scheduled:</strong> {{ c['follow_up_date'] }}</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 40px; color: #94a3b8;">
+      <i class="fa-solid fa-folder-open" style="font-size: 36px; margin-bottom: 10px; display: block;"></i>
+      No medical case records yet for {{ patient['name'] }}.
+      <div style="margin-top: 12px;">
+        <a href="{{ url_for('add_case_view', patient_id=patient['patient_id']) }}" class="btn btn-primary btn-sm">
+          <i class="fa-solid fa-file-medical"></i> Record Initial Medical Case
+        </a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- PATIENT APPOINTMENTS LIST -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      <i class="fa-solid fa-calendar-check" style="color: #1e88e5;"></i>
+      <span>Appointments & Scheduled Visits ({{ appointments|length }})</span>
+    </div>
+    <a href="{{ url_for('appointments') }}" class="btn btn-secondary btn-sm">
+      <i class="fa-solid fa-calendar-plus"></i> Schedule New Appointment
+    </a>
+  </div>
+
+  <div class="card-body" style="padding: 0;">
+    {% if appointments %}
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Time Slot</th>
+            <th>Attending Doctor</th>
+            <th>Reason for Visit</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in appointments %}
+          <tr>
+            <td><strong>{{ a['appointment_date'] }}</strong></td>
+            <td>{{ a['appointment_time'] }}</td>
+            <td>{{ a['doctor_name'] }}</td>
+            <td>{{ a['reason'] }}</td>
+            <td>
+              <span class="badge badge-{{ a['status']|lower }}">{{ a['status'] }}</span>
+            </td>
+            <td>
+              {% if a['status'] == 'Scheduled' %}
+              <form method="POST" action="{{ url_for('update_appointment_status_action', appt_id=a['id']) }}" style="display: inline;">
+                <input type="hidden" name="status" value="Completed">
+                <button type="submit" class="btn btn-success btn-sm" title="Mark as Completed">
+                  <i class="fa-solid fa-check"></i> Complete
+                </button>
+              </form>
+              <form method="POST" action="{{ url_for('update_appointment_status_action', appt_id=a['id']) }}" style="display: inline;">
+                <input type="hidden" name="status" value="Cancelled">
+                <button type="submit" class="btn btn-danger btn-sm" title="Cancel Appointment">
+                  <i class="fa-solid fa-xmark"></i> Cancel
+                </button>
+              </form>
+              {% else %}
+              <span style="color: #94a3b8; font-size: 12px;">Archived</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 30px; color: #94a3b8; font-size: 13px;">
+      No appointments scheduled for this patient.
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

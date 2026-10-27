@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staff Login - Smart Patient Case Management System</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="login-body">
+
+  <div class="login-card">
+    <div class="login-header">
+      <div class="login-logo">
+        <i class="fa-solid fa-hospital"></i>
+      </div>
+      <h2 style="color: #0f4c81; font-size: 22px; font-weight: 800; margin-bottom: 4px;">Smart Patient Case System</h2>
+      <p style="color: #64748b; font-size: 13px;">Authorized Hospital Staff Portal</p>
+    </div>
+
+    <div class="login-form-wrapper">
+
+      <!-- Academic Metadata Banner -->
+      <div style="background: #e3f2fd; border: 1px solid #bbdefb; border-radius: 6px; padding: 10px 12px; margin-bottom: 18px; font-size: 11.5px; color: #0d47a1;">
+        <strong>BCA Final Year Project (2026–27)</strong><br>
+        Student: <strong>Chhaya Kolase</strong> &bull; Sem V<br>
+        University: <strong>G H Raisoni University, Amravati</strong><br>
+        Guide: <strong>Sarang Thakare</strong> | In-charge: <strong>Pranav Dabharde</strong>
+      </div>
+
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}" style="padding: 10px 12px; font-size: 12.5px; margin-bottom: 15px;">
+              <div>{{ message }}</div>
+              <button type="button" class="alert-close" aria-label="Close">&times;</button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" action="{{ url_for('login', next=request.args.get('next')) }}">
+        <div class="form-group" style="margin-bottom: 15px;">
+          <label for="username"><i class="fa-solid fa-user-doctor"></i> Username</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            class="form-control"
+            placeholder="e.g. admin or dr_sarang"
+            required
+            autocomplete="username"
+            autofocus
+          >
+        </div>
+
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label for="password"><i class="fa-solid fa-lock"></i> Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            class="form-control"
+            placeholder="Enter your password"
+            required
+            autocomplete="current-password"
+          >
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 11px; font-size: 14px;">
+          <i class="fa-solid fa-right-to-bracket"></i> Secure Staff Sign In
+        </button>
+      </form>
+
+      <!-- Demo Accounts Accordion -->
+      <details class="demo-credentials-box" open>
+        <summary><i class="fa-solid fa-key"></i> Quick Demo Staff Credentials (Click to Fill)</summary>
+        <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px;">
+          <button type="button" class="btn btn-secondary btn-sm" style="justify-content: flex-start; text-align: left;" onclick="fillLogin('admin', 'admin123')">
+            <i class="fa-solid fa-user-shield"></i> <strong>Admin</strong> &mdash; <code>admin</code> / <code>admin123</code>
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" style="justify-content: flex-start; text-align: left;" onclick="fillLogin('dr_sarang', 'doctor123')">
+            <i class="fa-solid fa-stethoscope"></i> <strong>Doctor</strong> &mdash; <code>dr_sarang</code> / <code>doctor123</code>
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" style="justify-content: flex-start; text-align: left;" onclick="fillLogin('chhaya', 'chhaya123')">
+            <i class="fa-solid fa-user-graduate"></i> <strong>Chhaya Kolase</strong> &mdash; <code>chhaya</code> / <code>chhaya123</code>
+          </button>
+        </div>
+      </details>
+
+      <div style="text-align: center; margin-top: 18px; font-size: 11px; color: #94a3b8;">
+        Smart Patient Case Management System &bull; Version 1.0
+      </div>
+
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

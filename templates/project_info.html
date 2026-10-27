@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block title %}Project Documentation & Viva Guide - Smart Patient Case Management System{% endblock %}
+{% block page_title %}Academic Project Information & Viva Guide{% endblock %}
+
+{% block content %}
+<div class="toolbar">
+  <div>
+    <h2 style="font-size: 20px; font-weight: 700; color: #0f4c81;">BCA Final-Year Project Documentation</h2>
+    <p style="color: #64748b; font-size: 13px;">Comprehensive project summary, technology stack overview, database schema details, and viva voce preparation guide.</p>
+  </div>
+  <div>
+    <button type="button" class="btn btn-secondary" onclick="window.print()">
+      <i class="fa-solid fa-print"></i> Print Documentation
+    </button>
+  </div>
+</div>
+
+<!-- STUDENT & INSTITUTION CREDITS CARD -->
+<div class="card" style="border-left: 4px solid #1e88e5;">
+  <div class="card-header" style="background: #f0f7ff;">
+    <div class="card-title">
+      <i class="fa-solid fa-graduation-cap" style="color: #0f4c81;"></i>
+      <span>Academic Project Metadata</span>
+    </div>
+    <span class="badge" style="background: #1e88e5; color: #ffffff;">Session 2026–27</span>
+  </div>
+  <div class="card-body">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; font-size: 13.5px;">
+      <div>
+        <div style="color: #64748b; font-size: 11px; text-transform: uppercase; font-weight: 700;">Candidate Student</div>
+        <strong style="font-size: 16px; color: #0f4c81;">Chhaya Kolase</strong>
+        <div style="color: #475569;">BCA &bull; Semester V</div>
+      </div>
+
+      <div>
+        <div style="color: #64748b; font-size: 11px; text-transform: uppercase; font-weight: 700;">Affiliated University</div>
+        <strong style="color: #1e293b;">G H Raisoni University</strong>
+        <div style="color: #475569;">Amravati, Maharashtra</div>
+      </div>
+
+      <div>
+        <div style="color: #64748b; font-size: 11px; text-transform: uppercase; font-weight: 700;">Project Guide</div>
+        <strong style="color: #1e293b;">Sarang Thakare</strong>
+        <div style="color: #475569;">Project Mentor & Guide</div>
+      </div>
+
+      <div>
+        <div style="color: #64748b; font-size: 11px; text-transform: uppercase; font-weight: 700;">Project In-Charge</div>
+        <strong style="color: #1e293b;">Pranav Dabharde</strong>
+        <div style="color: #475569;">Academic In-charge</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ABSTRACT & OBJECTIVES -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+
+  <div class="card" style="margin-bottom: 0;">
+    <div class="card-header">
+      <div class="card-title">
+        <i class="fa-solid fa-file-lines" style="color: #0f4c81;"></i>
+        <span>Project Abstract</span>
+      </div>
+    </div>
+    <div class="card-body" style="font-size: 13px; line-height: 1.6; color: #334155;">
+      <p>
+        The <strong>Smart Patient Case Management System</strong> is a full-stack hospital clinical record management web application engineered using Python and Flask. Its primary objective is to replace traditional paper-based clinic registers with a centralized, secure, and digitized repository.
+      </p>
+      <p style="margin-top: 10px;">
+        The system enables authorized medical staff to register patients, maintain chronological case histories without overwriting historical records, book appointments with real-time conflict prevention, and generate analytical healthcare reports using Pandas and Matplotlib.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 0;">
+    <div class="card-header">
+      <div class="card-title">
+        <i class="fa-solid fa-bullseye" style="color: #0f4c81;"></i>
+        <span>Key Project Objectives</span>
+      </div>
+    </div>
+    <div class="card-body" style="font-size: 13px; line-height: 1.6; color: #334155;">
+      <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 8px;">
+        <li><strong>Role-Based Staff Access:</strong> Ensure only verified healthcare personnel access confidential clinical files.</li>
+        <li><strong>Unified Case History:</strong> Maintain sequential medical consultations rather than overwriting past diagnoses.</li>
+        <li><strong>Automated Identifier Generation:</strong> Generate unique, structured IDs (e.g. <code>PAT-2026-0001</code>).</li>
+        <li><strong>Doctor Schedule Protection:</strong> Prevent overlapping consultation bookings for identical time slots.</li>
+        <li><strong>Data Analytics & Visualizations:</strong> Employ Pandas DataFrames and Matplotlib charts for epidemiological tracking.</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- TECHNOLOGY STACK -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      <i class="fa-solid fa-layer-group" style="color: #1e88e5;"></i>
+      <span>Technology Stack Architecture</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px;">
+        <strong style="color: #0f4c81; display: block; margin-bottom: 4px;"><i class="fa-brands fa-python"></i> Python 3.x</strong>
+        <span style="font-size: 12px; color: #64748b;">Backend business logic, route handlers, session management, and server processing.</span>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px;">
+        <strong style="color: #0f4c81; display: block; margin-bottom: 4px;"><i class="fa-solid fa-server"></i> Flask Web Framework</strong>
+        <span style="font-size: 12px; color: #64748b;">Lightweight WSGI framework, Jinja2 templating, and route protection decorators.</span>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px;">
+        <strong style="color: #0f4c81; display: block; margin-bottom: 4px;"><i class="fa-solid fa-database"></i> SQLite3 Database</strong>
+        <span style="font-size: 12px; color: #64748b;">Serverless, zero-configuration relational database with foreign keys and parameterized queries.</span>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px;">
+        <strong style="color: #0f4c81; display: block; margin-bottom: 4px;"><i class="fa-solid fa-chart-column"></i> Pandas & Matplotlib</strong>
+        <span style="font-size: 12px; color: #64748b;">Statistical data manipulation, age cohort binning, CSV exports, and dynamic chart rendering.</span>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px;">
+        <strong style="color: #0f4c81; display: block; margin-bottom: 4px;"><i class="fa-brands fa-html5"></i> HTML5 & CSS3</strong>
+        <span style="font-size: 12px; color: #64748b;">Clean, responsive medical blue theme, responsive grids, and print media stylesheet.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DATABASE ARCHITECTURE -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      <i class="fa-solid fa-database" style="color: #1e88e5;"></i>
+      <span>Database Schema & Entity Relationships</span>
+    </div>
+  </div>
+  <div class="card-body" style="padding: 0;">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Table Name</th>
+            <th>Primary Key</th>
+            <th>Foreign Keys</th>
+            <th>Key Attributes / Columns</th>
+            <th>Purpose & Relationship</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>users</strong></td>
+            <td><code>id</code> (INTEGER)</td>
+            <td>None</td>
+            <td>username, password_hash, full_name, role, email</td>
+            <td>Hospital staff authentication with Werkzeug password hashing.</td>
+          </tr>
+          <tr>
+            <td><strong>patients</strong></td>
+            <td><code>id</code>, <code>patient_id</code> (UNIQUE)</td>
+            <td>None</td>
+            <td>name, age, gender, phone, email, address, blood_group, emergency_contact, registered_at</td>
+            <td>Stores patient demographic and contact records. Referenced by cases and appointments.</td>
+          </tr>
+          <tr>
+            <td><strong>medical_cases</strong></td>
+            <td><code>id</code> (INTEGER)</td>
+            <td><code>patient_id</code> &rarr; <code>patients(patient_id)</code></td>
+            <td>case_date, chief_complaint, symptoms, medical_history, allergies, diagnosis, treatment, doctor_notes, doctor_name, follow_up_date</td>
+            <td>1-to-Many relationship. Preserves sequential clinical encounters per patient.</td>
+          </tr>
+          <tr>
+            <td><strong>appointments</strong></td>
+            <td><code>id</code> (INTEGER)</td>
+            <td><code>patient_id</code> &rarr; <code>patients(patient_id)</code></td>
+            <td>appointment_date, appointment_time, doctor_name, reason, status</td>
+            <td>Manages consultation bookings and statuses (Scheduled, Completed, Cancelled).</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- VIVA VOCE QUESTIONS & ANSWERS -->
+<div class="card">
+  <div class="card-header" style="background: #fdfdfd;">
+    <div class="card-title">
+      <i class="fa-solid fa-comments-question-check" style="color: #0f4c81;"></i>
+      <span>Common Viva Voce Examination Questions & Model Answers</span>
+    </div>
+    <span style="font-size: 11.5px; color: #64748b;">Prepared for BCA Project Defense</span>
+  </div>
+  <div class="card-body">
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px;">
+        <h4 style="font-size: 14px; color: #0f4c81; margin-bottom: 6px;">
+          Q1: Why did you choose Flask over Django for this project?
+        </h4>
+        <p style="font-size: 13px; color: #334155; line-height: 1.5;">
+          <strong>Answer:</strong> Flask is a lightweight micro-framework that gives precise control over database connections, routing, and libraries without the heavy boilerplate or ORM overhead of Django. For a BCA project focusing on transparent SQL operations and custom Pandas analytics, Flask is ideal, clean to understand, and easy to present.
+        </p>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px;">
+        <h4 style="font-size: 14px; color: #0f4c81; margin-bottom: 6px;">
+          Q2: How is password security implemented in your application?
+        </h4>
+        <p style="font-size: 13px; color: #334155; line-height: 1.5;">
+          <strong>Answer:</strong> Passwords are never stored as plain text. We utilize Werkzeug's cryptographic functions &mdash; <code>generate_password_hash()</code> during user creation and <code>check_password_hash()</code> during login authentication. Even if the database file is inspected directly, the hashed values cannot be reversed into plain text.
+        </p>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px;">
+        <h4 style="font-size: 14px; color: #0f4c81; margin-bottom: 6px;">
+          Q3: How do you prevent SQL Injection attacks?
+        </h4>
+        <p style="font-size: 13px; color: #334155; line-height: 1.5;">
+          <strong>Answer:</strong> All database queries in <code>database.py</code> strictly use <strong>parameterized queries</strong> with <code>?</code> placeholders rather than raw Python string formatting (e.g. <code>cursor.execute("SELECT * FROM patients WHERE patient_id = ?", (pid,))</code>). This ensures the SQLite database engine treats all user inputs strictly as literal data, completely neutralizing SQL injection exploits.
+        </p>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px;">
+        <h4 style="font-size: 14px; color: #0f4c81; margin-bottom: 6px;">
+          Q4: How does the system handle medical case history without overwriting previous records?
+        </h4>
+        <p style="font-size: 13px; color: #334155; line-height: 1.5;">
+          <strong>Answer:</strong> We established a normalized <strong>1-to-Many relational structure</strong> between the <code>patients</code> and <code>medical_cases</code> tables linked via the foreign key <code>patient_id</code>. Whenever a patient visits for follow-up or a new ailment, a new row is appended to <code>medical_cases</code>. On the patient profile page, all cases are queried ordered by <code>case_date DESC</code> to present an immutable chronological medical timeline.
+        </p>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px;">
+        <h4 style="font-size: 14px; color: #0f4c81; margin-bottom: 6px;">
+          Q5: How are Pandas and Matplotlib utilized in the Reports module?
+        </h4>
+        <p style="font-size: 13px; color: #334155; line-height: 1.5;">
+          <strong>Answer:</strong> We use Pandas' <code>pd.read_sql_query()</code> to ingest database tables into DataFrames. We apply DataFrame methods such as <code>.value_counts()</code> and <code>pd.cut()</code> to compute frequency breakdowns by age groups and diagnoses. Matplotlib figures are rendered in memory via an <code>io.BytesIO</code> stream using the headless <code>Agg</code> backend, encoded into Base64 strings, and embedded directly into the HTML without saving intermediate image files to disk.
+        </p>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px;">
+        <h4 style="font-size: 14px; color: #0f4c81; margin-bottom: 6px;">
+          Q6: How does the Appointment Conflict Prevention feature work?
+        </h4>
+        <p style="font-size: 13px; color: #334155; line-height: 1.5;">
+          <strong>Answer:</strong> Before an appointment is saved, the function <code>check_appointment_conflict()</code> queries the <code>appointments</code> table for existing records matching the same <code>doctor_name</code>, <code>appointment_date</code>, and <code>appointment_time</code> with status <code>'Scheduled'</code>. If a match is found, booking is rejected with an explanatory flash alert, preventing double-booking of doctors.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

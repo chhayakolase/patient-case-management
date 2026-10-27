@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Smart Patient Case Management System{% endblock %}
+{% block page_title %}Hospital Overview & Dashboard{% endblock %}
+
+{% block content %}
+<!-- Quick Action Bar -->
+<div class="toolbar no-print">
+  <div>
+    <h2 style="font-size: 20px; font-weight: 700; color: #0f4c81;">Hospital Clinical Summary</h2>
+    <p style="color: #64748b; font-size: 13px;">Welcome back, {{ current_user['full_name'] }} ({{ current_user['role'] }}). Here is today's overview.</p>
+  </div>
+  <div style="display: flex; gap: 10px;">
+    <a href="{{ url_for('add_patient_view') }}" class="btn btn-primary">
+      <i class="fa-solid fa-user-plus"></i> Register Patient
+    </a>
+    <a href="{{ url_for('add_case_view') }}" class="btn btn-secondary">
+      <i class="fa-solid fa-file-medical"></i> Record Case
+    </a>
+    <a href="{{ url_for('appointments') }}" class="btn btn-secondary">
+      <i class="fa-solid fa-calendar-plus"></i> Schedule Visit
+    </a>
+  </div>
+</div>
+
+<!-- 4 Key Statistic Cards -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon blue">
+      <i class="fa-solid fa-hospital-user"></i>
+    </div>
+    <div class="stat-info">
+      <h3>{{ total_patients }}</h3>
+      <p>Total Registered Patients</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon green">
+      <i class="fa-solid fa-clipboard-check"></i>
+    </div>
+    <div class="stat-info">
+      <h3>{{ total_cases }}</h3>
+      <p>Medical Cases Documented</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon amber">
+      <i class="fa-solid fa-calendar-day"></i>
+    </div>
+    <div class="stat-info">
+      <h3>{{ today_appts_count }}</h3>
+      <p>Today's Appointments</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon teal">
+      <i class="fa-solid fa-user-doctor"></i>
+    </div>
+    <div class="stat-info">
+      <h3>5</h3>
+      <p>Active Medical Staff</p>
+    </div>
+  </div>
+</div>
+
+<!-- Main Split: Today's Appointments & Recent Patients -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+
+  <!-- Today's Appointments Card -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <i class="fa-regular fa-calendar-check" style="color: #1e88e5;"></i>
+        <span>Today's Scheduled Appointments ({{ today_appts|length }})</span>
+      </div>
+      <a href="{{ url_for('appointments') }}" class="btn btn-secondary btn-sm">
+        View All <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+    <div class="card-body" style="padding: 0;">
+      {% if today_appts %}
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Patient</th>
+              <th>Doctor</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for appt in today_appts %}
+            <tr>
+              <td><strong>{{ appt['appointment_time'] }}</strong></td>
+              <td>
+                <a href="{{ url_for('patient_details', patient_id=appt['patient_id']) }}" style="font-weight: 600; color: #1e88e5; text-decoration: none;">
+                  {{ appt['patient_name'] }}
+                </a>
+                <div style="font-size: 11px; color: #64748b;">{{ appt['patient_id'] }}</div>
+              </td>
+              <td style="font-size: 12.5px;">{{ appt['doctor_name'] }}</td>
+              <td>
+                <span class="badge badge-{{ appt['status']|lower }}">{{ appt['status'] }}</span>
+              </td>
+              <td>
+                {% if appt['status'] == 'Scheduled' %}
+                <form method="POST" action="{{ url_for('update_appointment_status_action', appt_id=appt['id']) }}" style="display: inline;">
+                  <input type="hidden" name="status" value="Completed">
+                  <button type="submit" class="btn btn-success btn-sm" title="Mark as Completed">
+                    <i class="fa-solid fa-check"></i>
+                  </button>
+                </form>
+                {% else %}
+                <span style="color: #94a3b8; font-size: 11px;">Done</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div style="text-align: center; padding: 40px; color: #94a3b8;">
+        <i class="fa-regular fa-calendar-xmark" style="font-size: 32px; margin-bottom: 10px; display: block;"></i>
+        No appointments scheduled for today yet.
+        <div style="margin-top: 10px;">
+          <a href="{{ url_for('appointments') }}" class="btn btn-primary btn-sm">Schedule Now</a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Recently Registered Patients Card -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <i class="fa-solid fa-user-clock" style="color: #00838f;"></i>
+        <span>Recently Registered Patients</span>
+      </div>
+      <a href="{{ url_for('patients') }}" class="btn btn-secondary btn-sm">
+        View All <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+    <div class="card-body" style="padding: 0;">
+      {% if recent_patients %}
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Patient ID</th>
+              <th>Name</th>
+              <th>Age/Gen</th>
+              <th>Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in recent_patients %}
+            <tr>
+              <td><span style="font-family: monospace; font-weight: 600; color: #0f4c81;">{{ p['patient_id'] }}</span></td>
+              <td><strong>{{ p['name'] }}</strong></td>
+              <td>{{ p['age'] }}y / {{ p['gender'][0] }}</td>
+              <td style="color: #64748b; font-size: 12px;">{{ p['registered_at'] }}</td>
+              <td>
+                <a href="{{ url_for('patient_details', patient_id=p['patient_id']) }}" class="btn btn-secondary btn-sm" title="View Patient Profile">
+                  <i class="fa-regular fa-eye"></i> View
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div style="text-align: center; padding: 40px; color: #94a3b8;">
+        <i class="fa-solid fa-users" style="font-size: 32px; margin-bottom: 10px; display: block;"></i>
+        No registered patients found.
+        <div style="margin-top: 10px;">
+          <a href="{{ url_for('add_patient_view') }}" class="btn btn-primary btn-sm">Add First Patient</a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+<!-- Quick Analytics Snapshot Card -->
+<div class="card" style="margin-top: 10px;">
+  <div class="card-header">
+    <div class="card-title">
+      <i class="fa-solid fa-chart-pie" style="color: #1e88e5;"></i>
+      <span>Patient Case Analytics Quick Snapshot (Powered by Pandas)</span>
+    </div>
+    <a href="{{ url_for('reports') }}" class="btn btn-primary btn-sm">
+      Open Full Analytical Reports & Matplotlib Charts <i class="fa-solid fa-arrow-up-right-from-square"></i>
+    </a>
+  </div>
+  <div class="card-body">
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+      
+      <!-- Age Breakdown -->
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px;">
+        <div style="font-weight: 700; color: #0f4c81; margin-bottom: 10px; font-size: 13px;">
+          <i class="fa-solid fa-user-group"></i> Age Distribution Groups
+        </div>
+        {% for grp, cnt in analytics_summary.age_groups.items() %}
+        <div style="display: flex; justify-content: space-between; font-size: 12.5px; padding: 4px 0; border-bottom: 1px dashed #e2e8f0;">
+          <span>{{ grp }}</span>
+          <strong>{{ cnt }} patient(s)</strong>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Top Diagnoses -->
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px;">
+        <div style="font-weight: 700; color: #0f4c81; margin-bottom: 10px; font-size: 13px;">
+          <i class="fa-solid fa-stethoscope"></i> Most Common Clinical Diagnoses
+        </div>
+        {% for diag, cnt in analytics_summary.diagnoses.items() %}
+        <div style="display: flex; justify-content: space-between; font-size: 12px; padding: 4px 0; border-bottom: 1px dashed #e2e8f0;">
+          <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 170px;" title="{{ diag }}">{{ diag }}</span>
+          <strong style="color: #1e88e5;">{{ cnt }} case(s)</strong>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Monthly Trends -->
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px;">
+        <div style="font-weight: 700; color: #0f4c81; margin-bottom: 10px; font-size: 13px;">
+          <i class="fa-solid fa-arrow-trend-up"></i> Monthly Patient Intake
+        </div>
+        {% for mth, cnt in analytics_summary.monthly.items() %}
+        <div style="display: flex; justify-content: space-between; font-size: 12.5px; padding: 4px 0; border-bottom: 1px dashed #e2e8f0;">
+          <span>{{ mth }}</span>
+          <strong style="color: #10b981;">{{ cnt }} registered</strong>
+        </div>
+        {% endfor %}
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

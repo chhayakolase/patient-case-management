@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}Record Medical Case - Smart Patient Case Management System{% endblock %}
+{% block page_title %}Clinical Case Documentation{% endblock %}
+
+{% block content %}
+<div class="toolbar">
+  <div>
+    <h2 style="font-size: 20px; font-weight: 700; color: #0f4c81;">Record Patient Medical Case</h2>
+    <p style="color: #64748b; font-size: 13px;">Document clinical assessment, diagnosis, patient symptoms, and treatment plan.</p>
+  </div>
+  <div>
+    {% if selected_pid %}
+    <a href="{{ url_for('patient_details', patient_id=selected_pid) }}" class="btn btn-secondary">
+      <i class="fa-solid fa-arrow-left"></i> Return to Patient
+    </a>
+    {% else %}
+    <a href="{{ url_for('medical_cases') }}" class="btn btn-secondary">
+      <i class="fa-solid fa-arrow-left"></i> Back to Cases List
+    </a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card" style="max-width: 900px; margin: 0 auto;">
+  <div class="card-header">
+    <div class="card-title">
+      <i class="fa-solid fa-file-waveform" style="color: #1e88e5;"></i>
+      <span>Clinical Case Record Form</span>
+    </div>
+    <span style="font-size: 12px; color: #64748b;"><span class="required" style="color: #ef4444;">*</span> Mandatory medical fields</span>
+  </div>
+
+  <form method="POST" action="{{ url_for('add_case_view') }}">
+    <div class="card-body">
+      <div class="form-grid">
+
+        <!-- Select Patient -->
+        <div class="form-group form-group-full">
+          <label for="patient_id">
+            Patient Selection <span class="required" style="color: #ef4444;">*</span>
+          </label>
+          <select id="patient_id" name="patient_id" class="form-control" required>
+            <option value="" disabled {% if not selected_pid %}selected{% endif %}>Select Patient by Name & ID...</option>
+            {% for p in patients %}
+            <option value="{{ p['patient_id'] }}" {% if selected_pid == p['patient_id'] or form_data.get('patient_id') == p['patient_id'] %}selected{% endif %}>
+              {{ p['patient_id'] }} &mdash; {{ p['name'] }} ({{ p['age'] }}y, {{ p['gender'] }}, Ph: {{ p['phone'] }})
+            </option>
+            {% endfor %}
+          </select>
+          <small style="color: #64748b; font-size: 11px;">Patient not listed? <a href="{{ url_for('add_patient_view') }}" target="_blank" style="color: #1e88e5;">Register patient first</a></small>
+        </div>
+
+        <!-- Case Date -->
+        <div class="form-group">
+          <label for="case_date">
+            Case Consultation Date <span class="required" style="color: #ef4444;">*</span>
+          </label>
+          <input
+            type="date"
+            id="case_date"
+            name="case_date"
+            class="form-control"
+            value="{{ form_data.get('case_date', today_str) }}"
+            required
+          >
+        </div>
+
+        <!-- Consulting Doctor -->
+        <div class="form-group">
+          <label for="doctor_name">
+            Attending / Consulting Doctor <span class="required" style="color: #ef4444;">*</span>
+          </label>
+          <select id="doctor_name" name="doctor_name" class="form-control" required>
+            <option value="" disabled selected>Select Doctor...</option>
+            {% for doc in doctors %}
+            <option value="{{ doc }}" {% if form_data.get('doctor_name') == doc or (current_user and current_user['role'] == 'Doctor' and current_user['full_name'] in doc) %}selected{% endif %}>
+              {{ doc }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Chief Complaint -->
+        <div class="form-group form-group-full">
+          <label for="chief_complaint">
+            Chief Complaint (Primary Problem) <span class="required" style="color: #ef4444;">*</span>
+          </label>
+          <input
+            type="text"
+            id="chief_complaint"
+            name="chief_complaint"
+            class="form-control"
+            placeholder="e.g. Severe throbbing headache and fever for 3 days"
+            value="{{ form_data.get('chief_complaint', '') }}"
+            required
+          >
+        </div>
+
+        <!-- Symptoms -->
+        <div class="form-group form-group-full">
+          <label for="symptoms">
+            Symptoms & Clinical Observations <span class="required" style="color: #ef4444;">*</span>
+          </label>
+          <textarea
+            id="symptoms"
+            name="symptoms"
+            class="form-control"
+            placeholder="Document observed vitals (BP, pulse, temp, SpO2) and symptoms described by the patient..."
+            rows="3"
+            required
+          >{{ form_data.get('symptoms', '') }}</textarea>
+        </div>
+
+        <!-- Medical History -->
+        <div class="form-group">
+          <label for="medical_history">Past Medical / Surgical History</label>
+          <textarea
+            id="medical_history"
+            name="medical_history"
+            class="form-control"
+            placeholder="Previous illnesses, chronic conditions, family history..."
+            rows="2"
+          >{{ form_data.get('medical_history', '') }}</textarea>
+        </div>
+
+        <!-- Allergies -->
+        <div class="form-group">
+          <label for="allergies">Known Drug / Environmental Allergies</label>
+          <textarea
+            id="allergies"
+            name="allergies"
+            class="form-control"
+            placeholder="e.g. Penicillin, Sulfa drugs, Dust mites (or 'None')..."
+            rows="2"
+          >{{ form_data.get('allergies', '') }}</textarea>
+        </div>
+
+        <!-- Diagnosis -->
+        <div class="form-group form-group-full">
+          <label for="diagnosis">
+            Primary Clinical Diagnosis <span class="required" style="color: #ef4444;">*</span>
+          </label>
+          <input
+            type="text"
+            id="diagnosis"
+            name="diagnosis"
+            class="form-control"
+            placeholder="e.g. Essential Hypertension (Stage 1), Acute Bronchitis, Type 2 Diabetes"
+            value="{{ form_data.get('diagnosis', '') }}"
+            required
+          >
+        </div>
+
+        <!-- Prescribed Treatment -->
+        <div class="form-group form-group-full">
+          <label for="treatment">
+            Prescribed Treatment, Medications & Dosage <span class="required" style="color: #ef4444;">*</span>
+          </label>
+          <textarea
+            id="treatment"
+            name="treatment"
+            class="form-control"
+            placeholder="List prescribed medicines, dosage (OD/BD/TDS), dietary guidelines, and lifestyle instructions..."
+            rows="4"
+            required
+          >{{ form_data.get('treatment', '') }}</textarea>
+        </div>
+
+        <!-- Doctor Notes -->
+        <div class="form-group">
+          <label for="doctor_notes">Physician Confidential Notes & Advice</label>
+          <textarea
+            id="doctor_notes"
+            name="doctor_notes"
+            class="form-control"
+            placeholder="Special precautions, lab investigations ordered..."
+            rows="2"
+          >{{ form_data.get('doctor_notes', '') }}</textarea>
+        </div>
+
+        <!-- Follow-up Date -->
+        <div class="form-group">
+          <label for="follow_up_date">Recommended Follow-up Visit Date</label>
+          <input
+            type="date"
+            id="follow_up_date"
+            name="follow_up_date"
+            class="form-control"
+            value="{{ form_data.get('follow_up_date', '') }}"
+          >
+          <small style="color: #64748b; font-size: 11px;">Leave blank if no follow-up is scheduled.</small>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="card-footer">
+      <a href="{{ url_for('medical_cases') }}" class="btn btn-secondary">Cancel</a>
+      <button type="submit" class="btn btn-primary">
+        <i class="fa-solid fa-floppy-disk"></i> Save Medical Case Record
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}
